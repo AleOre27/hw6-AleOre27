@@ -114,7 +114,8 @@ class DTree:
                     return False
                 else:
                     seen.add(node.variable)
-                    return helper(node.lessequal, seen) and helper(node.greater, seen)
+                    return helper(node.lessequal, seen)\
+                        and helper(node.greater, seen)
             else:
                 return True
 
