@@ -60,8 +60,8 @@ il.add_child(KVTree("Chicago", 2.7))
 treemap(lambda x, y: (x.upper(), y * 1000000), samplekv)
 
 class DTree:
-    def __init__(self, variable=None, threshold=None, lessequal=None, greater=None, outcome=None):
-        if (variable is None and threshold is None and lessequal is None and greater is None and outcome is None) or \
+    def __init__(self, variable, threshold, lessequal, greater, outcome):
+        if (variable is None and threshold is None and lessequal is None and greater is None and outcome is not None) or \
            (variable is not None and threshold is not None and lessequal is not None and greater is not None and outcome is None):
             self.variable = variable
             self.threshold = threshold
@@ -69,29 +69,20 @@ class DTree:
             self.greater = greater
             self.outcome = outcome
         else:
-            raise ValueError("Invalid arguments")
-
+            raise ValueError("Invalid arguments. Either all four of the first four arguments should be not None, or the last argumen should be not None, but not both.")
+            
     def tuple_atleast(self):
-        if self.outcome is not None:
-            return 0
-        else:
+        if self.variable is not None:
             return max(self.variable + 1, self.lessequal.tuple_atleast(), self.greater.tuple_atleast())
-
-    def find_outcome(self, observations):
-        if self.outcome is not None:
-            return self.outcome
-        elif observations[self.variable] <= self.threshold:
-            return self.lessequal.find_outcome(observations)
         else:
-            return self.greater.find_outcome(observations)
-
-    def no_repeats(self):
-        def helper(node, seen):
-            if node.outcome is not None:
-                return True
-            if node.variable in seen:
-                return False
-            seen.add(node.variable)
-            return helper(node.lessequal, seen.copy()) and helper(node.greater, seen.copy())
-
-        return helper(self, set())
+            # If this is a leaf node, return 0
+            return 0
+        
+    def find_outcome(self, observations):
+        if self.variable is not None:
+            if observations[self.variable] <= self.threshold:
+                return self.lessequal.find_outcome(observations)
+            else:
+                return self.greater.find_outcome(observations)
+        else:
+            return self.outcome
