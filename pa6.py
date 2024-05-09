@@ -86,3 +86,16 @@ class DTree:
                 return self.greater.find_outcome(observations)
         else:
             return self.outcome
+        
+    def no_repeats(self):
+        def helper(node, seen):
+            if node.variable is not None:
+                if node.variable in seen:
+                    return False
+                else:
+                    seen.add(node.variable)
+                    return helper(node.lessequal, seen) and helper(node.greater, seen)
+            else:
+                return True
+
+        return helper(self, set())
